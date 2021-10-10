@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wanderer/providers/great_places.dart';
 import 'package:wanderer/screens/add_place.dart';
+import 'package:wanderer/screens/place_detail.dart';
 
 class PlacesList extends StatelessWidget {
   const PlacesList({Key? key}) : super(key: key);
@@ -21,22 +22,37 @@ class PlacesList extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Consumer<GreatPlaces>(
-          child: Center(
-            child: Text("No places yet, start adding some"),
-          ),
-          builder: (ctx,greatPlace, ch)=> greatPlace.items.length<=0?
-          ch : ListView.builder(itemCount:greatPlace.items.length,
-              itemBuilder: (ctx,i)=> ListTile(
-              leading: CircleAvatar(
-                backgroundImage: FileImage(greatPlace.items[i].image),
-              ),
-                title: Text(greatPlace.items[i].title),
-                onTap: (){
-
-                },
-              ),
-          ),
+        child: FutureBuilder(
+          future: Provider.of<GreatPlaces>(context, listen: false)
+              .fetchAndSetPlaces(),
+          builder: (ctx, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Consumer<GreatPlaces>(
+                      child: Center(
+                        child: Text("No places yet, start adding some"),
+                      ),
+                      builder: (ctx, greatPlaces, Widget? ch) =>
+                          greatPlaces.items.length <= 0
+                              ? ch!
+                              : ListView.builder(
+                                  itemCount: greatPlaces.items.length,
+                                  itemBuilder: (ctx, i) => ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage:
+                                          FileImage(greatPlaces.items[i].image),
+                                    ),
+                                    title: Text(greatPlaces.items[i].title),
+                                    subtitle: Text(greatPlaces.items[i].location!.address!),
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(PlaceDetails.routeName,
+                                      arguments: greatPlaces.items[i].pId);// Detail page
+                                    },
+                                  ),
+                                ),
+                    ),
         ),
       ),
     );
