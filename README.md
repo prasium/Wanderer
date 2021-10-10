@@ -1,6 +1,9 @@
 # wanderer
 
 An app to store snaps and location of the places user visit.
+Install and run 👉 <a href="https://raw.githubusercontent.com/prasium/Wanderer/main/app-release.apk">Click to Download</a>
+
+ 
 
 ## Getting Started
 
